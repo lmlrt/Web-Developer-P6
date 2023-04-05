@@ -3,16 +3,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require("helmet");
+const dotenv= require('dot-env');
 
 const userRoutes = require('./routes/user');
 const saucesRoutes = require('./routes/sauce');
 
-const Sauce = require('./models/sauce');
-const User = require('./models/user');
-
-mongoose.connect('mongodb+srv://laurentmilhorat:ZvVY2TwBEtV3rwc@cluster0.qu2ewgr.mongodb.net/test?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGO_URL,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -24,7 +23,10 @@ mongoose.connect('mongodb+srv://laurentmilhorat:ZvVY2TwBEtV3rwc@cluster0.qu2ewgr
 
 const app = express();
 
+app.use(mongoSanitize());
 
+
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 
 app.use((req, res, next) => {
@@ -36,15 +38,12 @@ app.use((req, res, next) => {
 app.options('*', cors());
 
 app.use(express.json());
+app.use(express.static('uploads'));
 app.use(bodyParser.json());
-//app.use(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.urlencoded({ extended: false}));
 
 app.use('/api/sauces', saucesRoutes);
 app.use('/api/auth', userRoutes);
-
-
-
-
 
 
 module.exports = app;
