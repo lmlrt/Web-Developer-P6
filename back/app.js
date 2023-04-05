@@ -7,6 +7,7 @@ const cors = require('cors');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require("helmet");
 const dotenv= require('dot-env');
+const morgan = require('morgan');
 
 const userRoutes = require('./routes/user');
 const saucesRoutes = require('./routes/sauce');
@@ -24,7 +25,7 @@ mongoose.connect(process.env.MONGO_URL,
 const app = express();
 
 app.use(mongoSanitize());
-
+app.use(morgan('combined'));
 
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
